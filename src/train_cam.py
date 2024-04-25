@@ -10,26 +10,27 @@ from algorithms.factory import make_agent
 from logger import Logger
 from video import VideoRecorder
 from torchcam.methods import SmoothGradCAMpp, CAM
-from torchvision.models import resnet18
+from torchvision.models import resnet18, ResNet18_Weights
 from torchvision.transforms.functional import resize, normalize, to_pil_image
 
 
 def attach_heatmap(model, extractor, obs, args):
-    if isinstance(obs, utils.LazyFrames):
-        obs = np.array(obs)
+    assert isinstance(obs, utils.LazyFrames), 'Heatmap: obs are not Lazyframes'
+    obs = np.array(obs)
+    frames = None
     if args.cam_attach_mode == 1:
-        ret = torch.empty(0).cuda()
+        frames = torch.empty(0).cuda()
         for i in range(args.frame_stack):
             subobs = torch.tensor(obs[i*3:i*3+3]).cuda()
             input_tensor = normalize(resize(subobs, [224, 224]) / 255.,
                                [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]).unsqueeze(0)
             out = model(input_tensor)
             heatmap = extractor(out[0].argmax().item(), out)[0]
-            heatmap = resize(heatmap, [args.image_crop_size, args.image_crop_size]) * 255
-            ret = torch.cat((ret, subobs, heatmap))
-        ret = np.floor(ret.cpu().numpy()).astype(np.int32)
+            heatmap = (resize(heatmap, [args.image_crop_size, args.image_crop_size]) * 255)
+            slip = torch.cat((subobs.unsqueeze(0), heatmap.unsqueeze(0)), dim=1)
+            frames = torch.cat((frames, slip))
 
-    return ret
+    return utils.LazyFrames(frames.tolist())
 
 
 def evaluate(env, agent, video, num_episodes, L, step, cam_model, cam_extractor, args, test_env=False):
@@ -122,7 +123,7 @@ def main(args):
 
     # Prepare CAM
     if args.cam_model == 'resnet18':
-        cam_model = resnet18(pretrained=True).cuda().eval()
+        cam_model = resnet18(weights=ResNet18_Weights.DEFAULT).cuda().eval()
     if args.cam_extractor == 'SmoothGradCAMpp':
         cam_extractor = SmoothGradCAMpp(cam_model, args.cam_layer)
     elif args.cam_extractor == 'CAM':
