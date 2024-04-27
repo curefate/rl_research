@@ -60,7 +60,7 @@ def parse_args():
 	parser.add_argument('--svea_beta', default=0.5, type=float)
 
 	# cam TODO
-	parser.add_argument('--cam_attach_mode', default=1, type=int)
+	parser.add_argument('--cam_mode', default=1, type=int)
 	parser.add_argument('--cam_extractor', default='SmoothGradCAMpp', type=str)
 	parser.add_argument('--cam_model', default='resnet18', type=str)
 	parser.add_argument('--cam_layer', default=None, type=str)
