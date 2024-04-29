@@ -20,3 +20,5 @@ You can get all commands from /src/arguments_cam.py
 
 Commonly used: Python /src/train_cam.py --seed=114514 --save_video
 
+The default algorithm is SAC, evaluate mode is color_hard
+
