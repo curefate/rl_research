@@ -12,6 +12,11 @@ def parse_args():
 	parser.add_argument('--action_repeat', default=4, type=int)
 	parser.add_argument('--episode_length', default=1000, type=int)
 	parser.add_argument('--eval_mode', default='color_hard', type=str)
+	# TODO
+	parser.add_argument('--ckpt_path', default=None, type=str)
+	parser.add_argument('--start_steps', default='0', type=str)
+	parser.add_argument('--start_episodes', default='0', type=str)
+	parser.add_argument('--work_dir', default=None, type=str)
 	
 	# agent
 	parser.add_argument('--algorithm', default='sac', type=str)
@@ -93,6 +98,8 @@ def parse_args():
 	args.train_steps = int(args.train_steps.replace('k', '000'))
 	args.save_freq = int(args.save_freq.replace('k', '000'))
 	args.eval_freq = int(args.eval_freq.replace('k', '000'))
+	args.start_episodes = int(args.start_episodes.replace('k', '000'))
+	args.start_steps = int(args.start_steps.replace('k', '000'))
 
 	if args.eval_mode == 'none':
 		args.eval_mode = None

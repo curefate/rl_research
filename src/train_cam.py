@@ -1,5 +1,6 @@
 import torch
 import os
+import re
 import numpy as np
 import gym
 import utils
@@ -75,8 +76,11 @@ def main(args):
         cam_dir += '_' + args.cam_layer
     work_dir = os.path.join(args.log_dir, args.domain_name + '_' + args.task_name, args.algorithm, cam_dir,
                             str(args.seed))
+    if args.work_dir is not None:
+        work_dir = args.work_dir
     print('Working directory:', work_dir)
-    assert not os.path.exists(os.path.join(work_dir, 'train.log')), 'specified working directory already exists'
+    assert not os.path.exists(os.path.join(work_dir, 'train.log')) or args.ckpt_path is not None, \
+        'specified working directory already exists'
     utils.make_dir(work_dir)
     model_dir = utils.make_dir(os.path.join(work_dir, 'model'))
     video_dir = utils.make_dir(os.path.join(work_dir, 'video'))
@@ -106,8 +110,19 @@ def main(args):
         action_shape=env.action_space.shape,
         args=args
     )
+    if args.ckpt_path is not None:
+        ckpt_path = args.ckpt_path
+        if not os.path.exists(ckpt_path):
+            ckpt_path = os.path.join(model_dir, ckpt_path)
+        assert os.path.exists(ckpt_path), 'Checkpoint does not exist'
+        agent = torch.load(ckpt_path)
+        print('Loaded checkpoint:', ckpt_path)
+        if args.start_steps == 0:
+            args.start_steps = int(re.findall(r'\d+', os.path.basename(ckpt_path))[0])
+        print('Start step count:', args.start_steps)
+        print('Start episode count:', args.start_episodes)
 
-    start_step, episode, episode_reward, done = 0, 0, 0, True
+    start_step, episode, episode_reward, done = args.start_steps, args.start_episodes, 0, True
     L = Logger(work_dir)
     start_time = time.time()
     for step in range(start_step, args.train_steps + 1):
@@ -148,7 +163,7 @@ def main(args):
                 action = agent.sample_action(obs)
 
         # Run training update
-        if step >= args.init_steps:
+        if step >= (args.init_steps + start_step):
             num_updates = args.init_steps if step == args.init_steps else 1
             for _ in range(num_updates):
                 agent.update(replay_buffer, L, step)
