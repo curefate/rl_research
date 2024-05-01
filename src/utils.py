@@ -65,10 +65,7 @@ def load_config(key=None):
 
 
 def make_dir(dir_path):
-    try:
-        os.makedirs(dir_path)
-    except OSError:
-        pass
+    os.makedirs(dir_path, exist_ok=True)
     return dir_path
 
 

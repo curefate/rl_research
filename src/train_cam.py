@@ -11,6 +11,7 @@ from algorithms.factory import make_agent
 from logger import Logger
 from video import VideoRecorder
 import gc
+import json
 
 
 def evaluate(env, agent, video, num_episodes, L, step, test_env=False):
@@ -80,13 +81,14 @@ def main(args):
     if args.work_dir is not None:
         work_dir = args.work_dir
     print('Working directory:', work_dir)
-    assert not os.path.exists(os.path.join(work_dir, 'train.log')) or args.ckpt_path is not None, \
-        'specified working directory already exists'
+    # assert not os.path.exists(os.path.join(work_dir, 'train.log')) or args.ckpt_path is not None, \
+    #     'specified working directory already exists'
     utils.make_dir(work_dir)
     model_dir = utils.make_dir(os.path.join(work_dir, 'model'))
     video_dir = utils.make_dir(os.path.join(work_dir, 'video'))
     video = VideoRecorder(video_dir if args.save_video else None, height=448, width=448)
     utils.write_info(args, os.path.join(work_dir, 'info.log'))
+    rerun_dir = utils.make_dir(os.path.join(work_dir, 'rerun'))
 
     # Prepare agent
     assert torch.cuda.is_available(), 'must have cuda enabled'
@@ -111,17 +113,27 @@ def main(args):
         action_shape=env.action_space.shape,
         args=args
     )
-    if args.ckpt_path is not None:
-        ckpt_path = args.ckpt_path
-        if not os.path.exists(ckpt_path):
-            ckpt_path = os.path.join(model_dir, ckpt_path)
-        assert os.path.exists(ckpt_path), 'Checkpoint does not exist'
-        agent = torch.load(ckpt_path)
-        print('Loaded checkpoint:', ckpt_path)
-        if args.start_steps == 0:
-            args.start_steps = int(re.findall(r'\d+', os.path.basename(ckpt_path))[0])
-        print('Start step count:', args.start_steps)
-        print('Start episode count:', args.start_episodes)
+    # if args.ckpt_path is not None:
+    #     ckpt_path = args.ckpt_path
+    #     if not os.path.exists(ckpt_path):
+    #         ckpt_path = os.path.join(model_dir, ckpt_path)
+    #     assert os.path.exists(ckpt_path), 'Checkpoint does not exist'
+    #     agent = torch.load(ckpt_path)
+    #     print('Loaded checkpoint:', ckpt_path)
+    #     if args.start_steps == 0:
+    #         args.start_steps = int(re.findall(r'\d+', os.path.basename(ckpt_path))[0])
+    #     print('Start step count:', args.start_steps)
+    #     print('Start episode count:', args.start_episodes)
+
+    last_run_checkpoint = os.path.join(rerun_dir, 'last.pt')
+    if os.path.exists(last_run_checkpoint):
+        agent = torch.load(last_run_checkpoint)
+    last_run_info = os.path.join(rerun_dir, 'last_run.json')
+    if os.path.exists(last_run_info):
+        with open(last_run_info, "r") as json_file:
+            loaded_data = json.load(json_file)
+            args.start_steps = int(loaded_data['step'])
+            args.start_episodes = int(loaded_data['episode'])
 
     start_step, episode, episode_reward, done = args.start_steps, args.start_episodes, 0, True
     L = Logger(work_dir)
@@ -158,6 +170,15 @@ def main(args):
             episode += 1
 
             L.log('train/episode', episode, step)
+
+            # save checkpoint and information of the last done
+            torch.save(agent, os.path.join(rerun_dir, 'last.pt'))
+            with open(os.path.join(rerun_dir, 'last_run.json'), 'w') as f:
+                info = {
+                    'step': step,
+                    'episode': episode
+                }
+                json.dump(info, f, indent=4, separators=(',', ': '))
 
         # Sample action for data collection
         if step < args.init_steps:
