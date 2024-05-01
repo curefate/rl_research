@@ -10,6 +10,7 @@ from env.wrappers_cam import make_env
 from algorithms.factory import make_agent
 from logger import Logger
 from video import VideoRecorder
+import gc
 
 
 def evaluate(env, agent, video, num_episodes, L, step, test_env=False):
@@ -140,6 +141,9 @@ def main(args):
                 if test_env is not None:
                     evaluate(test_env, agent, video, args.eval_episodes, L, step, test_env=True)
                 L.dump(step)
+
+                # collect garbage in evaluation
+                gc.collect()
 
             # Save agent periodically
             if step > start_step and step % args.save_freq == 0:
