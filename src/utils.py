@@ -50,8 +50,9 @@ def write_info(args, fp):
         'git': subprocess.check_output(["git", "describe", "--always"]).strip().decode(),
         'args': vars(args)
     }
-    with open(fp, 'w') as f:
+    with open(fp, 'a') as f:
         json.dump(data, f, indent=4, separators=(',', ': '))
+        f.write("\n")
 
 
 def load_config(key=None):
