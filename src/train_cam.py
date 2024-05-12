@@ -144,6 +144,7 @@ def main(args):
             # Save agent periodically
             if step > start_step and step % args.save_freq == 0:
                 torch.save(agent, os.path.join(model_dir, f'{step}.pt'))
+                torch.save(replay_buffer, os.path.join(model_dir, '{}_buffer.pt'.format(step)))
 
             L.log('train/episode_reward', episode_reward, step)
 

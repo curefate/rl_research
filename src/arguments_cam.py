@@ -80,6 +80,8 @@ def parse_args():
 	parser.add_argument('--seed', default=None, type=int)
 	parser.add_argument('--log_dir', default='logs', type=str)
 	parser.add_argument('--save_video', default=False, action='store_true')
+	# TODO
+	parser.add_argument('--save_buffer', default=False, action='store_true')
 
 	args = parser.parse_args()
 
