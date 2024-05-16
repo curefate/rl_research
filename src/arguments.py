@@ -54,6 +54,7 @@ def parse_args():
 	# soda
 	parser.add_argument('--soda_batch_size', default=256, type=int)
 	parser.add_argument('--soda_tau', default=0.005, type=float)
+	parser.add_argument('--soda_data', required=True, type=str)
 
 	# svea
 	parser.add_argument('--svea_alpha', default=0.5, type=float)

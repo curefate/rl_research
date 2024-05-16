@@ -25,6 +25,7 @@ def parse_args():
 	parser.add_argument('--init_steps', default=1000, type=int)
 	parser.add_argument('--batch_size', default=128, type=int)
 	parser.add_argument('--hidden_dim', default=1024, type=int)
+	parser.add_argument('--buffer_capacity', default=500000, type=int)
 
 	# actor
 	parser.add_argument('--actor_lr', default=1e-3, type=float)
@@ -59,6 +60,7 @@ def parse_args():
 	# soda
 	parser.add_argument('--soda_batch_size', default=256, type=int)
 	parser.add_argument('--soda_tau', default=0.005, type=float)
+	parser.add_argument('--soda_data', required=True, type=str)
 
 	# svea
 	parser.add_argument('--svea_alpha', default=0.5, type=float)

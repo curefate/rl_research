@@ -100,7 +100,7 @@ def main(args):
     replay_buffer = utils.ReplayBuffer(
         obs_shape=obs_shape,
         action_shape=env.action_space.shape,
-        capacity=args.train_steps,
+        capacity=args.buffer_capacity,
         batch_size=args.batch_size
     )
     cropped_obs_shape = (3 * args.frame_stack, args.image_crop_size, args.image_crop_size)

@@ -15,6 +15,8 @@ class SODA(SAC):
 		self.aux_update_freq = args.aux_update_freq
 		self.soda_batch_size = args.soda_batch_size
 		self.soda_tau = args.soda_tau
+		self.cam_mode = args.cam_mode if hasattr(args, 'cam_mode') else 0
+		self.data_dir = args.soda_data
 
 		shared_cnn = self.critic.encoder.shared_cnn
 		aux_cnn = self.critic.encoder.head_cnn
@@ -51,10 +53,19 @@ class SODA(SAC):
 		assert x.size(-1) == 100
 
 		aug_x = x.clone()
-
 		x = augmentations.random_crop(x)
+		if self.cam_mode == 1: # remove concatenated heatmap
+			heatmap = x[:, -1:, :, :]
+			N, C, H, W = x.shape
+			x = x.view(N, C//4, 4, H, W)
+			x[:, :, -1, :, :] = 0
+			x = x.view(N, C, H, W)
+  
 		aug_x = augmentations.random_crop(aug_x)
-		aug_x = augmentations.random_overlay(aug_x)
+		aug_x = augmentations.random_overlay(aug_x, data_dir=self.data_dir)
+		if self.cam_mode == 1:
+			x[:, -1:, :, :] = heatmap
+			aug_x[:, -1:, :, :] = heatmap
 
 		soda_loss = self.compute_soda_loss(aug_x, x)
 		
