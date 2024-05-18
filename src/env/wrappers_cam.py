@@ -367,7 +367,6 @@ class HeatmapWrapper(gym.Wrapper):
             mask_expanded = mask.repeat(obs_tensor.shape[0], 1, 1)
             mask_expanded = mask_expanded.to(obs_tensor.dtype)
             frame = (obs_tensor * mask_expanded).cpu().numpy()
-            frame = np.squeeze(frame, axis=0)
             new_obs = np.floor(frame).astype(np.int32)
         elif self._mode == 3:
             obs_tensor = torch.tensor(obs).cuda()
@@ -378,7 +377,6 @@ class HeatmapWrapper(gym.Wrapper):
             heatmap = TF.resize(heatmap, [len(obs[0]), len(obs[0][0])])
             heatmap = heatmap.repeat(obs_tensor.shape[0], 1, 1)
             frame = (obs_tensor * 0.01 + heatmap * 0.99).cpu().numpy()
-            frame = np.squeeze(frame, axis=0)
             new_obs = np.floor(frame).astype(np.int32)
         return new_obs
 

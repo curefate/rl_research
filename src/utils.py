@@ -227,7 +227,7 @@ def count_parameters(net, as_int=False):
 from segment_anything import sam_model_registry, SamPredictor
 from segment_anything.utils.transforms import ResizeLongestSide
 
-sam_checkpoint = './sam_vit_b_01ec64.pth'
+sam_checkpoint = './checkpoints/sam_vit_b_01ec64.pth'
 sam_model_type = 'vit_b'
 sam = sam_model_registry[sam_model_type](checkpoint=sam_checkpoint).cuda()
 sam_predictor = SamPredictor(sam)
@@ -286,11 +286,11 @@ def extract_saliency_map(image, mode=1):
     return saliency_map
     
 if __name__ == '__main__':
-    if not os.path.exists('./sam_vit_b_01ec64.pth'):
-        subprocess.run(['wget', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth'])
-        
+    if not os.path.exists('./checkpoints/sam_vit_b_01ec64.pth'):
+        subprocess.run(['wget', '-P', './checkpoints', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth'])
+
     from PIL import Image
-    image = Image.open('ttt_heatmap.png')
+    image = Image.open('./src/ttt.png')
     image = np.array(image)
     saliency_detect_mode = 1
     saliency_map = extract_saliency_map(image, mode=saliency_detect_mode)
