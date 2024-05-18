@@ -222,3 +222,86 @@ def count_parameters(net, as_int=False):
     if as_int:
         return count
     return f'{count:,}'
+
+
+from segment_anything import sam_model_registry, SamPredictor
+from segment_anything.utils.transforms import ResizeLongestSide
+
+sam_checkpoint = './sam_vit_b_01ec64.pth'
+sam_model_type = 'vit_b'
+sam = sam_model_registry[sam_model_type](checkpoint=sam_checkpoint).cuda()
+sam_predictor = SamPredictor(sam)
+sam_resize_transform = ResizeLongestSide(sam.image_encoder.img_size)
+
+def prepare_image(image, transform, device):
+    image = transform.apply_image(image)
+    image = torch.as_tensor(image, device=device.device) 
+    return image.permute(2, 0, 1).contiguous()
+
+def generate_boxes(image):
+    height, width = image.shape[:2]
+
+    center = (width // 2, height // 2)
+    box_width = width // 2.5
+    box_heigth = height // 2.5
+
+    # fb_center = (width // 4, height // 2)
+    # sb_center = (width * 3 // 4, height // 2)
+    # box_width = width // 4
+    # box_heigth = height // 2
+
+    return torch.tensor([
+        # [fb_center[0] - box_width, fb_center[1] - box_heigth, fb_center[0] + box_width, fb_center[1] + box_heigth],
+        # [sb_center[0] - box_width, sb_center[1] - box_heigth, sb_center[0] + box_width, sb_center[1] + box_heigth],
+        [center[0] - box_width, center[1] - box_heigth, center[0] + box_width, center[1] + box_heigth],
+    ], device=sam.device)
+
+def extract_batch_saliency_map(images, mode=1):
+    batched_input = [{
+        'image': prepare_image(image, sam_resize_transform, sam),
+        'boxes': sam_resize_transform.apply_boxes_torch(generate_boxes(image), image.shape[:2]),
+        'original_size': image.shape[:2]
+    } for image in images]
+    batched_output = sam(batched_input, multimask_output=False)
+    saliency_maps = [output['masks'][0].cpu().numpy() for output in batched_output]
+    saliency_maps = [np.squeeze(saliency_map, axis=0) for saliency_map in saliency_maps]
+    return saliency_maps
+
+def extract_saliency_map(image, mode=1):
+    # saliency_map = np.zeros_like(image)
+    if mode == 1: # use YOLO + SAM
+        boxes = generate_boxes(image)
+        transformed_boxes = sam_predictor.transform.apply_boxes_torch(boxes, image.shape[:2])
+        sam_predictor.set_image(image)
+        masks, _, _ = sam_predictor.predict_torch(
+            point_coords=None,
+            point_labels=None,
+            boxes=transformed_boxes,
+            multimask_output=False)
+        saliency_map = masks[0].cpu().numpy()
+        saliency_map = np.squeeze(saliency_map, axis=0)
+    else:
+        raise NotImplementedError
+    
+    return saliency_map
+    
+if __name__ == '__main__':
+    if not os.path.exists('./sam_vit_b_01ec64.pth'):
+        subprocess.run(['wget', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth'])
+        
+    from PIL import Image
+    image = Image.open('ttt_heatmap.png')
+    image = np.array(image)
+    saliency_detect_mode = 1
+    saliency_map = extract_saliency_map(image, mode=saliency_detect_mode)
+
+    image_array = saliency_map * 255
+    image_array = image_array.astype(np.uint8)
+    Image.fromarray(image_array, 'L').save(f'{saliency_detect_mode}_saliency_map.jpg')  # 'L' mode for grayscale (black and white)
+
+    images = [image, image]
+    batch_saliency_map = extract_batch_saliency_map(images, mode=saliency_detect_mode)
+    for i, saliency_map in enumerate(batch_saliency_map):
+        image_array = saliency_map * 255
+        image_array = image_array.astype(np.uint8)
+        Image.fromarray(image_array, 'L').save(f'{i}_{saliency_detect_mode}_batch_saliency_map.png')

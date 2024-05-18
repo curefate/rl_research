@@ -5,3 +5,4 @@
 *.Identifier
 logs/
 **/__pycache__
+*.pth

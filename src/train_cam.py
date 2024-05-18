@@ -38,6 +38,10 @@ def evaluate(env, agent, video, num_episodes, L, step, test_env=False):
 
 
 def main(args):
+    if not os.path.exists('./sam_vit_b_01ec64.pth'):
+        import subprocess
+        subprocess.run(['wget', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth'])
+
     # Set seed
     utils.set_seed_everywhere(args.seed)
 
