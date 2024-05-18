@@ -61,7 +61,7 @@ def main(args):
 	) if args.eval_mode is not None else None
 
 	# Create working directory
-	work_dir = os.path.join(args.log_dir, args.domain_name+'_'+args.task_name, args.algorithm, str(args.seed))
+	work_dir = os.path.join(args.log_dir, args.domain_name+'_'+args.task_name, args.algorithm, 'default', str(args.seed))
 	print('Working directory:', work_dir)
 	assert not os.path.exists(os.path.join(work_dir, 'train.log')), 'specified working directory already exists'
 	utils.make_dir(work_dir)

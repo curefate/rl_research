@@ -356,6 +356,28 @@ class HeatmapWrapper(gym.Wrapper):
             heatmap = TF.resize(heatmap, [len(obs[0]), len(obs[0][0])]) * 255.
             frame = torch.cat((obs_tensor, heatmap)).cpu().numpy()
             new_obs = np.floor(frame).astype(np.int32)
+        elif self._mode == 2:
+            obs_tensor = torch.tensor(obs).cuda()
+            input_tensor = TF.normalize(TF.resize(obs_tensor, [224, 224]) / 255.,
+                                        [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]).unsqueeze(0)
+            cam = self._cam_model(input_tensor)[0]
+            heatmap = self._cam_extractor(cam.argmax().item(), cam)[0]
+            heatmap = TF.resize(heatmap, [len(obs[0]), len(obs[0][0])])
+            mask = heatmap > 0.3
+            mask_expanded = mask.repeat(obs_tensor.shape[0], 1, 1)
+            mask_expanded = mask_expanded.to(obs_tensor.dtype)
+            frame = (obs_tensor * mask_expanded).cpu().numpy()
+            new_obs = np.floor(frame).astype(np.int32)
+        elif self._mode == 3:
+            obs_tensor = torch.tensor(obs).cuda()
+            input_tensor = TF.normalize(TF.resize(obs_tensor, [224, 224]) / 255.,
+                                        [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]).unsqueeze(0)
+            cam = self._cam_model(input_tensor)[0]
+            heatmap = self._cam_extractor(cam.argmax().item(), cam)[0]
+            heatmap = TF.resize(heatmap, [len(obs[0]), len(obs[0][0])])
+            heatmap = heatmap.repeat(obs_tensor.shape[0], 1, 1)
+            frame = (obs_tensor * 0.01 + heatmap * 0.99).cpu().numpy()
+            new_obs = np.floor(frame).astype(np.int32)
         return new_obs
 
     def reset(self):

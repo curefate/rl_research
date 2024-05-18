@@ -1,1 +1,1 @@
-python ./src/train_cam.py --seed=114514 --train_steps 200k --buffer_capacity 200000 --algorithm soda --soda_data /media/ellen/datasets
+python ./src/train_cam.py --seed=114514 --train_steps 200k --buffer_capacity 200000 --algorithm soda --soda_data /media/ellen/datasets --cam_mode 2
