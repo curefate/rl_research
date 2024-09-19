@@ -4,13 +4,13 @@ Here are some gifs showing how agent moves in `/picture`.
 ## Contents
 - [Overview](#Overview)
   - [CAM](#CAM)
- - [DMCGB](#DMCGB)
+  - [DMCGB](#DMCGB)
 - [Setup](#Setup)
 - [ModelDesign](#ModelDesign)
 - [Discussion](#Discussion)
- - [Result](#Result)
- - [Limitation](#Limitation)
- - [Fulture](#Fulture)
+  - [Result](#Result)
+  - [Limitation](#Limitation)
+  - [Fulture](#Fulture)
 ***
 ## Overview
 ### CAM
