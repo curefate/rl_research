@@ -58,6 +58,7 @@ The results showed SAC can be improved by this, but in some other algorithms wit
 ### Fulture
 - Do more experiments in different environments.
 - Try other way to teach agent important area.
+- New reply_buffer code have not been update in this branch.
 - co-workers had do more in other branched, need to check.
 - TODO
 
