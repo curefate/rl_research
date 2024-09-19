@@ -19,11 +19,13 @@ The blue part is the most important part in this environment and should be focus
 ## Overview
 `SACAM` is a project which aim to improve the robustness of vision-based reinforcement learning. It's based on [SAC](https://arxiv.org/abs/1801.01290)(Soft Actor-Critic with maximum entropy) algorithm, which a algorithm with actor-ctiric structure and usually used as baseline. In normal case, the observation(input to agent's nerual network) of reinforcement learning are attributes that represents the state of the environment, for example in `Cartpole`, one of the most classic reinforcement learning environments, the observations are the position, velocity of carts, and angle, angular velocity of pole, agent will use these to output a best action it thinks in every step. But in actual cases, it is difficult to obtain observations similar to above example. While in humans case, the only thing we can get is what we see, it's an image sequence and we can reason about and understand the current state of the environment from it, that's what vision-based reinforcement learning want to achieve, i.e. use images as obversation for agent. 
 ![](/picture/figure1.png)
-However, directly changing observation to image usually leads to a significant performance degradation and is easily affected by irrelevant factors, unstable. The same example of Cartpole, to prevent pole from falling, we should focus on the moving trail of both cart and pole, everything else is irrelevant. But the thing is that if we change the color of cart, pole, even background, the agent cannot make correct decisions. There are many researchs about how to make vision-based reinforcement learning more robust, and the project here is aims to how to teach agent which part in observation image should be concentrated. We achieve this by [CAM](https://arxiv.org/abs/1512.04150)(class activation mapping). By adding the activation map of the observation extracted from the classifier pre-trained on Imagenet as an additional channel to the observation, the network can learn to focus on key parts to improve robustness.
+However, directly changing observation to image usually leads to a significant performance degradation and is easily affected by irrelevant factors, unstable. The same example of Cartpole, to prevent pole from falling, we should focus on the moving trail of both cart and pole, everything else is irrelevant. But the thing is that if we change the color of cart, pole, even background, the agent cannot make correct decisions. There are many researchs about how to make vision-based reinforcement learning more robust, and the project here is aims to how to teach agent which part in observation image should be concentrated. We achieve this by [CAM](https://arxiv.org/abs/1512.04150)(class activation mapping). By adding the activation map of the observation extracted from the classifier(resnet18) pre-trained on Imagenet as an additional channel to the observation, the network can learn to focus on key parts to improve robustness. In addition, as a plug-and-play method, it does not change the architecture of the existing network and can be easily applied to almost all networks.
 ### CAM
 The implementation of CAM in this project comes from [here](https://github.com/frgfm/torch-cam).
 ### DMCGB
 The enviroments of this project is from DMCGB(DMControl Generalization Benchmark), to make it work for this project, we modified their code, and the modified file will be mark with a `_cam` at last of file name.
+
+The old DMCGB project may have been hidden, find more about it from this [project](https://github.com/aalmuzairee/dmcgb2).
 ## Setup
 1.Python==3.9
 
@@ -46,7 +48,15 @@ The default algorithm is SAC, evaluate mode is color_hard
 ![](/picture/figure2.png)
 ## Discussion
 ### Result
+The agent was trained in `walker_walk` enrivonment and evaluated in `color_hard` mode (changed background color). Baseline is origin SAC. Above figures show method in this project can improve proformence.
+![](/picture/figure3.png)
+![](/picture/figure5.png)
 ### Limitation
-### Fulture
+Although this method is effective, it still lags behind existing SOTA methods by a large margin.And due to hardware limitations, there is too little experiment results.
 
+The results showed SAC can be improved by this, but in some other algorithms with different architexture, such as SODA, SVEA, it increases the amount of computation without much effect, and in some environments it can even cause collapse.
+### Fulture
+- Do more experiments in different environments.
+- Try other way to teach agent important area.
+- TODO
 
