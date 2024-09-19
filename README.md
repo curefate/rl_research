@@ -3,10 +3,10 @@ Here are some gifs showing how agent moves in `/picture`.
 ***
 ## Contents
 - [Overview](#Overview)
-- [CAM](#CAM)
+-- [CAM](#CAM)
 - [DMCGB](#DMCGB)
 - [Setup](#Setup)
-- [Model Design](#Model Design)
+- [ModelDesign](#ModelDesign)
 - [Discussion](#Discussion)
 - [Result](#Result)
 - [Limitation](#Limitation)
@@ -16,7 +16,7 @@ Here are some gifs showing how agent moves in `/picture`.
 ### CAM
 ### DMCGB
 ## Setup
-## Model Design
+## ModelDesign
 ## Discussion
 ### Result
 ### Limitation
