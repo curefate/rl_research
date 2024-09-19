@@ -1,6 +1,7 @@
 # SACAM
 ![](/picture/image5.gif)
 ![](/picture/image21.gif)
+The blue part is the most important part in this environment and should be focused by agent.
 ***
 # Contents
 - [Overview](#Overview)
