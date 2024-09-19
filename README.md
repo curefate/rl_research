@@ -1,6 +1,6 @@
 # SACAM
-![](/picure/image5.gif)
-![](/picure/image21.gif)
+![](/picture/image5.gif)
+![](/picture/image21.gif)
 ***
 # Contents
 - [Overview](#Overview)
