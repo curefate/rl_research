@@ -58,5 +58,6 @@ The results showed SAC can be improved by this, but in some other algorithms wit
 ### Fulture
 - Do more experiments in different environments.
 - Try other way to teach agent important area.
+- co-workers had do more in other branched, need to check.
 - TODO
 
