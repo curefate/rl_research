@@ -6,6 +6,7 @@ Here are some gifs showing how agent moves in `/picture`.
   - [CAM](#CAM)
   - [DMCGB](#DMCGB)
 - [Setup](#Setup)
+- [Command](#Command)
 - [ModelDesign](#ModelDesign)
 - [Discussion](#Discussion)
   - [Result](#Result)
@@ -17,21 +18,10 @@ Here are some gifs showing how agent moves in `/picture`.
 
 However, directly changing observation to image usually leads to a significant performance degradation and is easily affected by irrelevant factors, unstable. The same example of Cartpole, to prevent pole from falling, we should focus on the moving trail of both cart and pole, everything else is irrelevant. But the thing is that if we change the color of cart, pole, even background, the agent cannot make correct decisions. There are many researchs about how to make vision-based reinforcement learning more robust, and the project here is aims to how to teach agent which part in observation image should be concentrated. We achieve this by [CAM](https://arxiv.org/abs/1512.04150)(class activation mapping). By adding the activation map of the observation extracted from the classifier pre-trained on Imagenet as an additional channel to the observation, the network can learn to focus on key parts to improve robustness.
 ### CAM
+The implementation of CAM in this project comes from [here](https://github.com/frgfm/torch-cam).
 ### DMCGB
+The enviroments of this project is from DMCGB(DMControl Generalization Benchmark), to make it work for this project, we modified their code, and the modified file will be mark with a `_cam` at last of file name.
 ## Setup
-## ModelDesign
-## Discussion
-### Result
-### Limitation
-### Fulture
-
-
-
-
-
-
-**SETUP:**
-
 1.Python==3.9
 
 2.Install Mujoco_200 following [this](https://gist.github.com/ellisbrown/47bfd3e524aed11216cd3c0a0872a654)
@@ -43,14 +33,16 @@ However, directly changing observation to image usually leads to a significant p
 5.Uninstall gym, downgrade setuptools, install gym0.19.0, the file has been uploaded in SLACK
 
 6.Install other dependencies, you can know these just run the code and concern the log
-
-
-
-**COMMAND:**
-
+## Command
 You can get all commands from /src/arguments_cam.py
 
 Commonly used: Python /src/train_cam.py --seed=114514 --save_video
 
 The default algorithm is SAC, evaluate mode is color_hard
+## ModelDesign
+## Discussion
+### Result
+### Limitation
+### Fulture
+
 
