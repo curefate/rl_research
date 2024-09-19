@@ -48,7 +48,7 @@ The default algorithm is SAC, evaluate mode is color_hard
 ![](/picture/figure2.png)
 ## Discussion
 ### Result
-The agent was trained in `walker_walk` enrivonment and evaluated in `color_hard` mode (changed background color). Baseline is origin SAC. Above figures show method in this project can improve proformence.
+The agent was trained in `walker_walk` enrivonment and evaluated in `color_hard` mode (changed background color). Baseline is origin SAC. Figures show method in this project can improve proformence.
 ![](/picture/figure3.png)
 ![](/picture/figure5.png)
 ### Limitation
