@@ -13,6 +13,7 @@ Here are some gifs showing how agent moves in `/picture`.
   - [Fulture](#Fulture)
 ***
 ## Overview
+`SACAM` is a project which aim to improve the robust of vision-based reinforcement learning. It's based on [SAC](https://arxiv.org/abs/1801.01290)(Soft Actor-Critic with maximum entropy) algorithm, which a algorithm with actor-ctiric structure and usually used as baseline. In normal case, the observation(input to agent's nerual network) of reinforcement learning are attributes that represents the state of the environment, for example in `Cartpole`, one of the most classic reinforcement learning environments, the observations are the position, velocity of carts, and angle, angular velocity of pole, agent will use these to output a best action it thinks in every step. But in actual cases, it is difficult to obtain observations similar to above example. While in humans case, the only thing we can get is what we see, it's an image sequence and we can reason about and understand the current state of the environment from it, that's what vision-based reinforcement learning want to achieve, i.e. use images as input for agent. 
 ### CAM
 ### DMCGB
 ## Setup
