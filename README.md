@@ -1,7 +1,7 @@
 # SACAM
 Here are some gifs showing how agent moves in `/picture`.
 ***
-## Contents
+# Contents
 - [Overview](#Overview)
   - [CAM](#CAM)
   - [DMCGB](#DMCGB)
